@@ -36,17 +36,22 @@ def read_file_to_list(filepath, strip_newlines=True):
 
 def rotate(rotation, curr_dial):
     rotation_num = int(rotation[1:])
+    num_of_clicks = 0
     if rotation[0] == 'R':
         curr_dial += rotation_num
         while curr_dial > 99:
+            num_of_clicks += 1
+            print("click")
             curr_dial -= 100
 
     if rotation[0] == 'L':
         curr_dial -= rotation_num
         while curr_dial < 0:
+            num_of_clicks += 1
+            print("click")
             curr_dial += 100
 
-    return curr_dial
+    return curr_dial, num_of_clicks
 
 
 if __name__ == '__main__':
@@ -54,9 +59,10 @@ if __name__ == '__main__':
     num_of_rotations = len(rotations)
     num_of_zeros = 0
     for i in range(num_of_rotations):
-        print(dial, " rotation: ", rotations[i])
-        dial = rotate(rotations[i], dial)
-        if dial == 0:
-            num_of_zeros += 1
+        print(dial, " rotation: ", rotations[i], "zeros: ", num_of_zeros)
+        rotation = rotate(rotations[i], dial)
+        dial = rotation[0]
+        num_of_zeros += rotation[1]
+
     print(dial)
     print("num of zeros is: ", num_of_zeros)
