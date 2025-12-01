@@ -1,5 +1,4 @@
-import os
-
+dial = 50
 
 def read_file_to_list(filepath, strip_newlines=True):
     """
@@ -35,7 +34,29 @@ def read_file_to_list(filepath, strip_newlines=True):
 
 
 
+def rotate(rotation, curr_dial):
+    rotation_num = int(rotation[1:])
+    if rotation[0] == 'R':
+        curr_dial += rotation_num
+        while curr_dial > 99:
+            curr_dial -= 100
+
+    if rotation[0] == 'L':
+        curr_dial -= rotation_num
+        while curr_dial < 0:
+            curr_dial += 100
+
+    return curr_dial
+
+
 if __name__ == '__main__':
-    print("hahaha")
     rotations = read_file_to_list("input_rotations.txt")
-    print(rotations)
+    num_of_rotations = len(rotations)
+    num_of_zeros = 0
+    for i in range(num_of_rotations):
+        print(dial, " rotation: ", rotations[i])
+        dial = rotate(rotations[i], dial)
+        if dial == 0:
+            num_of_zeros += 1
+    print(dial)
+    print("num of zeros is: ", num_of_zeros)
