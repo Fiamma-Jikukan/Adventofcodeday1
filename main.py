@@ -33,10 +33,10 @@ def read_file_to_list(filepath, strip_newlines=True):
         return None
 
 
-
 def rotate(rotation, curr_dial):
     rotation_num = int(rotation[1:])
     num_of_clicks = 0
+
     if rotation[0] == 'R':
         curr_dial += rotation_num
         while curr_dial > 99:
@@ -45,11 +45,13 @@ def rotate(rotation, curr_dial):
             curr_dial -= 100
 
     if rotation[0] == 'L':
-        curr_dial -= rotation_num
-        while curr_dial < 0:
-            num_of_clicks += 1
-            print("click")
-            curr_dial += 100
+        for ding in range(rotation_num):
+            if curr_dial == 0:
+                curr_dial += 99
+            curr_dial -= 1
+            if curr_dial == 0:
+                num_of_clicks += 1
+                print("click")
 
     return curr_dial, num_of_clicks
 
