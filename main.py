@@ -97,7 +97,7 @@ def find_top_and_bottom(range_IDs):
     top_range = range_IDs[dash_index+1:]
     return int(bottom_range), int(top_range)
 
-def is_valid_id(id):
+def is_valid_id_old(id):
     id_str = str(id)
     if len(id_str) % 2 != 0:
         return True
@@ -106,6 +106,45 @@ def is_valid_id(id):
         if id_str[i] != id_str[half_point + i]:
             return True
     return False
+
+def divide_str(str, num):
+    # print("from divided str num: ", num)
+
+    divided_str = []
+    index = 0
+    while index < len(str):
+        divided_str.append(str[index: index + num])
+        index += num
+    # print("from divided str: ", divided_str)
+    return divided_str
+
+
+def is_valid_id(id):
+    id_str = str(id)
+    # print("this is the id to divide:", id_str)
+    num_of_digits = len(id_str)
+    if num_of_digits == 1:
+        return True
+    for i in range(1, num_of_digits):
+        if num_of_digits % i != 0:
+            continue
+        divided_i = divide_str(id_str, i)
+        # print("divided number:", divided_i, "it's devided into:", i, "parts")
+        num_of_divided_digits = len(divided_i)
+        all_part_the_same_sum = 0
+        for j in range(1,num_of_divided_digits):
+            # print("all_part_the_same_sum:", all_part_the_same_sum)
+            if divided_i[0] == divided_i[j]:
+                # print("parts are the same!")
+                all_part_the_same_sum += 1
+        # print("all_part_the_same_sum after loop:", all_part_the_same_sum)
+
+        if all_part_the_same_sum == num_of_divided_digits - 1:
+            # print("All parts are the same!")
+            return False
+        all_part_the_same_sum = 0
+    return True
+
 
 def IDs_finder(range_IDs):
     top_and_bottom = find_top_and_bottom(range_IDs)
@@ -116,6 +155,7 @@ def IDs_finder(range_IDs):
         valid_id = is_valid_id(i)
         if not valid_id:
             invalid_ids.append(i)
+    print(invalid_ids)
     return invalid_ids
 
 
@@ -140,7 +180,6 @@ if __name__ == '__main__':
     sum = 0
     for range_of_IDs in ids:
         invalids = IDs_finder(range_of_IDs)
-        print(invalids)
         for j in range(len(invalids)):
             sum += invalids[j]
 
