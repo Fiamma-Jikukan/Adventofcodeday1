@@ -1,5 +1,6 @@
 dial = 50
 
+
 def read_file_to_list(filepath, strip_newlines=True):
     """
     Reads a text file line by line and returns a list of strings.
@@ -88,14 +89,16 @@ def rotate(rotation, curr_dial):
 
     return curr_dial, num_of_clicks
 
+
 def find_top_and_bottom(range_IDs):
     dash_index = 0
     for i in range(len(range_IDs)):
         if range_IDs[i] == '-':
             dash_index = i
     bottom_range = range_IDs[:dash_index]
-    top_range = range_IDs[dash_index+1:]
+    top_range = range_IDs[dash_index + 1:]
     return int(bottom_range), int(top_range)
+
 
 def is_valid_id_old(id):
     id_str = str(id)
@@ -106,6 +109,7 @@ def is_valid_id_old(id):
         if id_str[i] != id_str[half_point + i]:
             return True
     return False
+
 
 def divide_str(str, num):
     # print("from divided str num: ", num)
@@ -132,7 +136,7 @@ def is_valid_id(id):
         # print("divided number:", divided_i, "it's devided into:", i, "parts")
         num_of_divided_digits = len(divided_i)
         all_part_the_same_sum = 0
-        for j in range(1,num_of_divided_digits):
+        for j in range(1, num_of_divided_digits):
             # print("all_part_the_same_sum:", all_part_the_same_sum)
             if divided_i[0] == divided_i[j]:
                 # print("parts are the same!")
@@ -151,7 +155,7 @@ def IDs_finder(range_IDs):
     top_range = top_and_bottom[1]
     bottom_range = top_and_bottom[0]
     invalid_ids = []
-    for i in range(bottom_range, top_range+1):
+    for i in range(bottom_range, top_range + 1):
         valid_id = is_valid_id(i)
         if not valid_id:
             invalid_ids.append(i)
@@ -159,7 +163,83 @@ def IDs_finder(range_IDs):
     return invalid_ids
 
 
+def find_index_of_largest_dig(arr):
+    "find the possition of the largest digit in an array"
+    index_of_arr = 0
+    for i in range(len(arr)):
+        if arr[i] > arr[index_of_arr]:
+            index_of_arr = i
+    return index_of_arr
 
+
+def find_two_largest_batteries(bank):
+    "get two largest numbers from a string of numbers"
+    battaries_arr = divide_str(bank, 1)
+    print(battaries_arr)
+    # battaries_arr.sort()
+    # print(battaries_arr)
+    largest_index = find_index_of_largest_dig(battaries_arr)
+    print(battaries_arr[largest_index], "largest index:", largest_index)
+    second_largest_after_largest = battaries_arr[largest_index + 1:]
+    print(second_largest_after_largest)
+
+    if second_largest_after_largest == []:
+        second_largest_index = find_index_of_largest_dig(battaries_arr[:largest_index])
+        second_largest = battaries_arr[second_largest_index]
+        return second_largest, battaries_arr[largest_index]
+
+    after_largest_arr = battaries_arr[largest_index + 1:]
+    second_largest_index = find_index_of_largest_dig(after_largest_arr)
+    print("second largest index:", second_largest_index)
+    second_largest = after_largest_arr[second_largest_index]
+    return battaries_arr[largest_index], second_largest
+
+    print(second_largest_after_largest, "\n")
+
+
+def find_twelve_largest_batteries(bank):
+    bank_arr = divide_str(bank, 1)
+
+    # # find largest digit
+    length = len(bank_arr)
+    # bank_without_last_twelve = bank_arr[:length-12]
+    # largest_before_twelve_index = find_index_of_largest_dig(bank_without_last_twelve)
+    # largest_overall_index = find_index_of_largest_dig(bank_arr)
+    #
+    # # if largest is twelve before last, the largest is the final twelve
+    # if bank_arr[largest_before_twelve_index] == bank_arr[-12]:
+    #     return bank_arr[-12:]
+    #
+    # if largest_overall_index < length-12:
+    #     without_tail = bank_arr[largest_overall_index:]
+    #
+    # if largest_overall_index > length-12:
+
+    list_of_largest_combo_by_order = []
+    for i in range(12, 0, -1):
+        cut_last_i_min_one = bank_arr[:len(bank_arr) - i + 1]
+        # print("from outside while loop cut_last_i_min_one:" , cut_last_i_min_one, "i:", i)
+        largest_index_before_i = find_index_of_largest_dig(cut_last_i_min_one)
+
+        if largest_index_before_i == len(cut_last_i_min_one) - 1:
+            j = 0
+            while len(list_of_largest_combo_by_order) != 12:
+                cut_head = bank_arr[len(bank_arr) - i:]
+
+                # print("from while loop j:", j)
+                # print("from while loop length-j:", len(cut_last_i_min_one) - j)
+                # print("from while loop new bank_arr:", bank_arr)
+                # print("from while loop cut head:", cut_head)
+                # print("from while loop what he appended until now:", list_of_largest_combo_by_order,"\n")
+                list_of_largest_combo_by_order.append(cut_head[j])
+                j += 1
+            return list_of_largest_combo_by_order
+
+        list_of_largest_combo_by_order.append(bank_arr[largest_index_before_i])
+        bank_arr = bank_arr[largest_index_before_i + 1:]
+        # print("from outside while loop what he appended until now:", list_of_largest_combo_by_order)
+        # print("from outside while loop new bank_arr:", bank_arr, "\n")
+    return list_of_largest_combo_by_order
 
 
 if __name__ == '__main__':
@@ -174,14 +254,26 @@ if __name__ == '__main__':
     #
     # print(dial)
     # print("num of zeros is: ", num_of_zeros)
-    print("part 2")
-    ids = read_ranges_to_list("input_ids.txt")
-    print(ids)
+
+    # print("part 2")
+    # ids = read_ranges_to_list("input_ids.txt")
+    # print(ids)
+    # sum = 0
+    # for range_of_IDs in ids:
+    #     invalids = IDs_finder(range_of_IDs)
+    #     for j in range(len(invalids)):
+    #         sum += invalids[j]
+    #
+    # print(sum)
+
+    print("part 3")
+    banks = read_file_to_list("banks_input.txt")
     sum = 0
-    for range_of_IDs in ids:
-        invalids = IDs_finder(range_of_IDs)
-        for j in range(len(invalids)):
-            sum += invalids[j]
+    for bank in banks:
+        batteries_to_activate = find_twelve_largest_batteries(bank)
+        final_digs = ''.join(batteries_to_activate)
+        print("finale:", final_digs, '\n')
+        sum += int(final_digs)
+        print(batteries_to_activate)
 
-    print(sum)
-
+    print("sum of batteries:", sum, "\n")
