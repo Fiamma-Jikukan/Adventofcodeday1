@@ -1,3 +1,5 @@
+from os import remove
+
 dial = 50
 
 
@@ -242,6 +244,55 @@ def find_twelve_largest_batteries(bank):
     return list_of_largest_combo_by_order
 
 
+def is_paper_accessible(matrix, i, j, rows, columns):
+    sum_of_ajesent_papers = 0
+    directions = []
+    directions.append([i + 1, j])
+    directions.append([i - 1, j])
+    directions.append([i, j + 1])
+    directions.append([i, j - 1])
+    directions.append([i + 1, j + 1])
+    directions.append([i - 1, j - 1])
+    directions.append([i + 1, j - 1])
+    directions.append([i - 1, j + 1])
+    for d in range(8):
+        if directions[d][0] < 0 or directions[d][1] < 0:
+            continue
+        if directions[d][0] >= rows or directions[d][1] >= columns:
+            continue
+        if matrix[directions[d][0]][directions[d][1]] == '@':
+            sum_of_ajesent_papers += 1
+    if sum_of_ajesent_papers < 4:
+        # print(directions)
+        return 1
+    return 0
+
+
+def find_out_how_many_papers_accessible(matrix_of_papers):
+    num_of_rows = len(matrix_of_papers)
+    num_of_columns = len(matrix_of_papers[0])
+    coordinates_of_removable_papers = []
+    accessible_papers_sum = 0
+    for i in range(num_of_rows):
+        for j in range(num_of_columns):
+            if matrix_of_papers[i][j] == '.':
+                continue
+            is_accessible = is_paper_accessible(matrix_of_papers, i, j, num_of_rows, num_of_columns)
+            if is_accessible == 1:
+                accessible_papers_sum += is_accessible
+                coordinates_of_removable_papers.append([i, j])
+    return accessible_papers_sum, coordinates_of_removable_papers
+
+
+def remove_papers(matrix_of_papers, removable_papers):
+    for poss in range(len(removable_papers)):
+        row = removable_papers[poss][0]
+        column = removable_papers[poss][1]
+        matrix_of_papers[row][column] = '.'
+
+    return matrix_of_papers
+
+
 if __name__ == '__main__':
     # rotations = read_file_to_list("input_rotations.txt")
     # num_of_rotations = len(rotations)
@@ -266,14 +317,36 @@ if __name__ == '__main__':
     #
     # print(sum)
 
-    print("part 3")
-    banks = read_file_to_list("banks_input.txt")
-    sum = 0
-    for bank in banks:
-        batteries_to_activate = find_twelve_largest_batteries(bank)
-        final_digs = ''.join(batteries_to_activate)
-        print("finale:", final_digs, '\n')
-        sum += int(final_digs)
-        print(batteries_to_activate)
+    # print("part 3")
+    # banks = read_file_to_list("banks_input.txt")
+    # sum = 0
+    # for bank in banks:
+    #     batteries_to_activate = find_twelve_largest_batteries(bank)
+    #     final_digs = ''.join(batteries_to_activate)
+    #     print("finale:", final_digs, '\n')
+    #     sum += int(final_digs)
+    #     print(batteries_to_activate)
+    #
+    # print("sum of batteries:", sum, "\n")
 
-    print("sum of batteries:", sum, "\n")
+    print("part 4")
+    papers = read_file_to_list("input_papers.txt")
+    papers_matrix = []
+    for paper in papers:
+        papers_matrix.append(divide_str(paper, 1))
+
+    for paper_roll in papers_matrix:
+        print(paper_roll)
+
+    total_removed = 0
+    while True:
+        how_many_accessible = find_out_how_many_papers_accessible(papers_matrix)[0]
+        if how_many_accessible == 0:
+            break
+        removables = find_out_how_many_papers_accessible(papers_matrix)[1]
+        removed_papers_metrix = remove_papers(papers_matrix, removables)
+        papers_matrix = removed_papers_metrix
+        total_removed += how_many_accessible
+    print("total_removed:", total_removed)
+
+
