@@ -615,25 +615,25 @@ if __name__ == '__main__':
     # # sum_of_all_worksheet = sum_lines_form_worksheet(worksheets_lines)
     # # print(sum_of_all_worksheet)
 
-    # print("day 7")
-    # teleporter_str = read_file_to_list("input_teleporter_copy.txt")
-    # teleporter = []
-    # for i in range(len(teleporter_str)):
-    #     teleporter.append(list(teleporter_str[i]))
-    #
-    # for line in teleporter:
-    #     print(line)
-    # s_index = 0
-    # for j in range(len(teleporter[0])):
-    #     if teleporter[0][j] == 'S':
-    #         s_index += 1
-    #
-    #
-    # print("\n")
-    # splits = teleporter_activate(teleporter)
-    # print(splits)
-    #
-    # for line in teleporter:
-    #     print(line)
+    print("day 7")
+    teleporter_str = read_file_to_list("input_teleporter_copy.txt")
+    teleporter = []
+    for i in range(len(teleporter_str)):
+        teleporter.append(list(teleporter_str[i]))
 
-    print("day 8")
+    for line in teleporter:
+        print(line)
+    s_index = 0
+    for j in range(len(teleporter[0])):
+        if teleporter[0][j] == 'S':
+            s_index += 1
+
+
+    print("\n")
+    splits = teleporter_activate(teleporter)
+    print(splits)
+
+    for line in teleporter:
+        print(line)
+
+    # print("day 8")
