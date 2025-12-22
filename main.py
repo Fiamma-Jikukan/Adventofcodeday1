@@ -1,3 +1,4 @@
+import math
 from os import remove
 
 dial = 50
@@ -488,6 +489,43 @@ def teleporter_activate(teleporter_list):
     return num_of_splits
 
 
+def straight_line_3D_space(box1, box2):
+    return math.sqrt((box1[0] - box2[0])**2 + (box1[1] - box2[1])**2 + (box1[2] - box2[2])**2)
+
+def make_distance_matrix(all_boxes_coordinates):
+    result = []
+    for i in range(len(all_boxes_coordinates)):
+        result.append([])
+        for j in range(len(all_boxes_coordinates)):
+            result[i].append([])
+
+    for i in range(len(all_boxes_coordinates)):
+        for j in range(len(all_boxes_coordinates)):
+            if i == j:
+               result[i][j].append(0)
+            else:
+               result[i][j].append(straight_line_3D_space(all_boxes_coordinates[i], all_boxes_coordinates[j]))
+    return result
+
+def find_closest_boxes(boxes_matrix):
+    shortest_distance = 0
+    corx = 0
+    cory = 0
+
+    for i in range(len(boxes_matrix)):
+        for j in range(len(boxes_matrix)):
+            # print(boxes_matrix[i][j])
+            # print(shortest_distance)
+            if shortest_distance == 0:
+                shortest_distance = boxes_matrix[i][j][0]
+            if (boxes_matrix[i][j][0] != 0) and (boxes_matrix[i][j][0] < shortest_distance):
+                # print(boxes_matrix[i][j])
+                # print(shortest_distance)
+                shortest_distance = boxes_matrix[i][j][0]
+                corx = i
+                cory = j
+    return corx, cory
+
 if __name__ == '__main__':
     # rotations = read_file_to_list("input_rotations.txt")
     # num_of_rotations = len(rotations)
@@ -584,7 +622,7 @@ if __name__ == '__main__':
     #     sum_of_fresh_ids += range_int[1] - range_int[0] + 1
     #
     # print(sum_of_fresh_ids)
-
+    #
     # print("day 6")
     # worksheet = read_file_to_list("input_worksheet.txt")
     # # print(worksheet)
@@ -614,26 +652,106 @@ if __name__ == '__main__':
     #
     # # sum_of_all_worksheet = sum_lines_form_worksheet(worksheets_lines)
     # # print(sum_of_all_worksheet)
+    #
+    # print("day 7")
+    # teleporter_str = read_file_to_list("input_teleporter_copy.txt")
+    # teleporter = []
+    # for i in range(len(teleporter_str)):
+    #     teleporter.append(list(teleporter_str[i]))
+    #
+    # for line in teleporter:
+    #     print(line)
+    # s_index = 0
+    # for j in range(len(teleporter[0])):
+    #     if teleporter[0][j] == 'S':
+    #         s_index += 1
+    #
+    #
+    # print("\n")
+    # splits = teleporter_activate(teleporter)
+    # print(splits)
+    #
+    # for line in teleporter:
+    #     print(line)
 
-    print("day 7")
-    teleporter_str = read_file_to_list("input_teleporter_copy.txt")
-    teleporter = []
-    for i in range(len(teleporter_str)):
-        teleporter.append(list(teleporter_str[i]))
+    print("day 8")
+    all_boxes_strings = read_file_to_list("input_boxes_copy.txt")
+    separate_boxes = []
+    for i in range (len(all_boxes_strings)):
+        separate_boxes.append(all_boxes_strings[i].split(','))
+    boxes_to_int = []
+    for j in range(len(separate_boxes)):
+        boxes_to_int.append([int(i) for i in separate_boxes[j]])
+    print(boxes_to_int)
+    distance_matrix = make_distance_matrix(boxes_to_int)
+    # print(distance_matrix)
+    for i in range (len(distance_matrix)):
+        print(distance_matrix[i])
+    circuits = []
 
-    for line in teleporter:
-        print(line)
-    s_index = 0
-    for j in range(len(teleporter[0])):
-        if teleporter[0][j] == 'S':
-            s_index += 1
+
+    for curr_runn in range(1000):
+        shortest_cors = find_closest_boxes(distance_matrix)
+        if curr_runn == 0:
+            circuits.append([shortest_cors[0], shortest_cors[1]])
+
+        # print(shortest_cors)
+        # print(distance_matrix[shortest_cors[0]][shortest_cors[1]])
+        # print(boxes_to_int[shortest_cors[0]])
+        # print(boxes_to_int[shortest_cors[1]])
+        cor_0_circuits_index = -1
+        cor_1_circuits_index = -1
+        for k in range(len(circuits)):
+            if shortest_cors[0] in circuits[k]:
+                cor_0_circuits_index = k
+            if shortest_cors[1] in circuits[k]:
+                cor_1_circuits_index = k
+        if cor_0_circuits_index != -1 and cor_1_circuits_index != -1 and cor_0_circuits_index != cor_1_circuits_index:
+            copy_before_death_0 = circuits[cor_0_circuits_index]
+            copy_before_death_1 = circuits[cor_1_circuits_index]
+            to_add = copy_before_death_0 + copy_before_death_1
+            # print(to_add)
+            circuits.remove(copy_before_death_0)
+            circuits.remove(copy_before_death_1)
+            # print(circuits)
+            circuits.append(to_add)
 
 
-    print("\n")
-    splits = teleporter_activate(teleporter)
-    print(splits)
+        for k in range(len(circuits)):
+            if shortest_cors[0] in circuits[k] and shortest_cors[1] not in circuits[k]:
+                circuits[k].append(shortest_cors[1])
+                distance_matrix[shortest_cors[0]][shortest_cors[1]] = [0]
+                distance_matrix[shortest_cors[1]][shortest_cors[0]] = [0]
+                break
+            if shortest_cors[1] in circuits[k] and shortest_cors[0] not in circuits[k]:
+                circuits[k].append(shortest_cors[0])
+                distance_matrix[shortest_cors[0]][shortest_cors[1]] = [0]
+                distance_matrix[shortest_cors[1]][shortest_cors[0]] = [0]
+                break
+            if shortest_cors[1] in circuits[k] and shortest_cors[0] in circuits[k]:
+                distance_matrix[shortest_cors[0]][shortest_cors[1]] = [0]
+                distance_matrix[shortest_cors[1]][shortest_cors[0]] = [0]
+                break
+            if k == len(circuits)-1:
+                circuits.append([shortest_cors[0], shortest_cors[1]])
 
-    for line in teleporter:
-        print(line)
+        distance_matrix[shortest_cors[0]][shortest_cors[1]] = [0]
+        distance_matrix[shortest_cors[1]][shortest_cors[0]] = [0]
 
-    # print("day 8")
+        # print("possition:", cor_0_circuits_index, cor_1_circuits_index)
+        print("curr_run and circuits: ", curr_runn, circuits)
+
+
+    lengths_of_circuits = []
+    for i in circuits:
+        lengths_of_circuits.append(len(i))
+    lengths_of_circuits.sort(reverse=True)
+    print(lengths_of_circuits[0] * lengths_of_circuits[1] * lengths_of_circuits[2])
+
+
+
+
+
+
+
+
